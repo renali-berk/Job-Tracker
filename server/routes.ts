@@ -77,6 +77,13 @@ export async function registerRoutes(
       return res.status(400).json({ message: "Upper salary must be greater than or equal to lower salary" });
     }
 
+    if (body.haasAlumCount !== undefined) {
+      updates.haasAlumCount = body.haasAlumCount === null ? null : Number(body.haasAlumCount);
+    }
+    if (body.haasRecentAlum !== undefined) {
+      updates.haasRecentAlum = body.haasRecentAlum ?? null;
+    }
+
     const updated = await storage.updateProspect(id, updates);
     res.json(updated);
   });

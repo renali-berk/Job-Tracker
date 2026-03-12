@@ -4,7 +4,7 @@ import type { Prospect } from "@shared/schema";
 import { STATUSES, INTEREST_LEVELS } from "@shared/schema";
 import { ProspectCard } from "@/components/prospect-card";
 import { AddProspectForm } from "@/components/add-prospect-form";
-import { Briefcase, Plus } from "lucide-react";
+import { Briefcase, Plus, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 
 const columnColors: Record<string, string> = {
   Bookmarked: "bg-blue-500",
+  "Haas Network": "bg-amber-400",
   Applied: "bg-indigo-500",
   "Phone Screen": "bg-violet-500",
   Interviewing: "bg-amber-500",
@@ -27,7 +28,6 @@ const columnColors: Record<string, string> = {
 };
 
 type InterestFilter = "All" | typeof INTEREST_LEVELS[number];
-
 const FILTER_OPTIONS: InterestFilter[] = ["All", ...INTEREST_LEVELS];
 
 function KanbanColumn({
@@ -40,6 +40,7 @@ function KanbanColumn({
   isLoading: boolean;
 }) {
   const [interestFilter, setInterestFilter] = useState<InterestFilter>("All");
+  const isHaasColumn = status === "Haas Network";
 
   const filteredProspects =
     interestFilter === "All"
@@ -48,15 +49,25 @@ function KanbanColumn({
 
   return (
     <div
-      className="flex flex-col min-w-[260px] max-w-[320px] w-full bg-muted/40 rounded-md"
+      className={`flex flex-col min-w-[260px] max-w-[320px] w-full rounded-md ${
+        isHaasColumn
+          ? "bg-amber-50/60 dark:bg-amber-950/20 ring-1 ring-amber-200/60 dark:ring-amber-800/40"
+          : "bg-muted/40"
+      }`}
       data-testid={`column-${status.replace(/\s+/g, "-").toLowerCase()}`}
     >
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/50">
-        <div className={`w-2 h-2 rounded-full ${columnColors[status] || "bg-gray-400"}`} />
-        <h3 className="text-sm font-semibold truncate">{status}</h3>
+      <div className={`flex items-center gap-2 px-3 py-2.5 border-b ${isHaasColumn ? "border-amber-200/60 dark:border-amber-800/40" : "border-border/50"}`}>
+        {isHaasColumn ? (
+          <GraduationCap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+        ) : (
+          <div className={`w-2 h-2 rounded-full shrink-0 ${columnColors[status] || "bg-gray-400"}`} />
+        )}
+        <h3 className={`text-sm font-semibold truncate ${isHaasColumn ? "text-amber-700 dark:text-amber-400" : ""}`}>
+          {status}
+        </h3>
         <Badge
           variant="secondary"
-          className="ml-auto text-[10px] px-1.5 py-0 h-5 min-w-[20px] flex items-center justify-center no-default-active-elevate"
+          className={`ml-auto text-[10px] px-1.5 py-0 h-5 min-w-[20px] flex items-center justify-center no-default-active-elevate ${isHaasColumn ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" : ""}`}
           data-testid={`badge-count-${status.replace(/\s+/g, "-").toLowerCase()}`}
         >
           {filteredProspects.length}
@@ -72,7 +83,7 @@ function KanbanColumn({
             className={`flex-1 text-[10px] font-medium py-0.5 rounded transition-colors ${
               interestFilter === option
                 ? option === "All"
-                  ? "bg-primary text-primary-foreground"
+                  ? isHaasColumn ? "bg-amber-500 text-white" : "bg-primary text-primary-foreground"
                   : option === "High"
                   ? "bg-red-500 text-white"
                   : option === "Medium"

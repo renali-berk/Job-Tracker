@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const STATUSES = [
   "Bookmarked",
+  "Haas Network",
   "Applied",
   "Phone Screen",
   "Interviewing",
@@ -24,6 +25,8 @@ export const prospects = pgTable("prospects", {
   notes: text("notes"),
   salaryMin: integer("salary_min"),
   salaryMax: integer("salary_max"),
+  haasAlumCount: integer("haas_alum_count"),
+  haasRecentAlum: text("haas_recent_alum"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -39,6 +42,8 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
   notes: z.string().optional().nullable(),
   salaryMin: z.number().int().positive("Lower salary must be a positive number").optional().nullable(),
   salaryMax: z.number().int().positive("Upper salary must be a positive number").optional().nullable(),
+  haasAlumCount: z.number().int().min(0).optional().nullable(),
+  haasRecentAlum: z.string().optional().nullable(),
 }).refine(
   (data) => {
     if (data.salaryMin != null && data.salaryMax != null) {
