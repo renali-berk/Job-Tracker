@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Prospect } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus } from "lucide-react";
+import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +39,39 @@ function InterestIndicator({ level }: { level: string }) {
     default:
       return null;
   }
+}
+
+function SalaryDisplay({ salaryMin, salaryMax }: { salaryMin: number | null; salaryMax: number | null }) {
+  if (salaryMin == null && salaryMax == null) {
+    return (
+      <span
+        className="inline-flex items-center gap-0.5 text-xs font-medium text-muted-foreground/60"
+        data-testid="salary-unknown"
+      >
+        <DollarSign className="w-3 h-3" />
+        -K
+      </span>
+    );
+  }
+
+  let display: string;
+  if (salaryMin != null && salaryMax != null) {
+    const median = Math.round((salaryMin + salaryMax) / 2);
+    display = `$${median}K`;
+  } else if (salaryMin != null) {
+    display = `$${salaryMin}K`;
+  } else {
+    display = `$${salaryMax}K`;
+  }
+
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400"
+      data-testid="salary-display"
+    >
+      {display}
+    </span>
+  );
 }
 
 export function ProspectCard({ prospect }: { prospect: Prospect }) {
@@ -103,8 +136,11 @@ export function ProspectCard({ prospect }: { prospect: Prospect }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <InterestIndicator level={prospect.interestLevel} />
+        <div className="flex items-center justify-between gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <InterestIndicator level={prospect.interestLevel} />
+          </div>
+          <SalaryDisplay salaryMin={prospect.salaryMin} salaryMax={prospect.salaryMax} />
         </div>
 
         {prospect.jobUrl && (

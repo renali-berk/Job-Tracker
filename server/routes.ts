@@ -55,6 +55,28 @@ export async function registerRoutes(
       updates.interestLevel = level;
     }
 
+    if (body.salaryMin !== undefined) {
+      const min = body.salaryMin === null ? null : Number(body.salaryMin);
+      if (min !== null && (!Number.isInteger(min) || min <= 0)) {
+        return res.status(400).json({ message: "Lower salary must be a positive number" });
+      }
+      updates.salaryMin = min;
+    }
+
+    if (body.salaryMax !== undefined) {
+      const max = body.salaryMax === null ? null : Number(body.salaryMax);
+      if (max !== null && (!Number.isInteger(max) || max <= 0)) {
+        return res.status(400).json({ message: "Upper salary must be a positive number" });
+      }
+      updates.salaryMax = max;
+    }
+
+    const resolvedMin = updates.salaryMin !== undefined ? updates.salaryMin : existing.salaryMin;
+    const resolvedMax = updates.salaryMax !== undefined ? updates.salaryMax : existing.salaryMax;
+    if (resolvedMin != null && resolvedMax != null && (resolvedMax as number) < (resolvedMin as number)) {
+      return res.status(400).json({ message: "Upper salary must be greater than or equal to lower salary" });
+    }
+
     const updated = await storage.updateProspect(id, updates);
     res.json(updated);
   });

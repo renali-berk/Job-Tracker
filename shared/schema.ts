@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -22,6 +22,8 @@ export const prospects = pgTable("prospects", {
   status: text("status").notNull().default("Bookmarked"),
   interestLevel: text("interest_level").notNull().default("Medium"),
   notes: text("notes"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -35,7 +37,17 @@ export const insertProspectSchema = createInsertSchema(prospects).omit({
   interestLevel: z.enum(INTEREST_LEVELS).default("Medium"),
   jobUrl: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-});
+  salaryMin: z.number().int().positive("Lower salary must be a positive number").optional().nullable(),
+  salaryMax: z.number().int().positive("Upper salary must be a positive number").optional().nullable(),
+}).refine(
+  (data) => {
+    if (data.salaryMin != null && data.salaryMax != null) {
+      return data.salaryMax >= data.salaryMin;
+    }
+    return true;
+  },
+  { message: "Upper salary must be greater than or equal to lower salary", path: ["salaryMax"] }
+);
 
 export type InsertProspect = z.infer<typeof insertProspectSchema>;
 export type Prospect = typeof prospects.$inferSelect;

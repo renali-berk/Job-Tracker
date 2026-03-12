@@ -42,6 +42,8 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
       status: prospect.status as InsertProspect["status"],
       interestLevel: prospect.interestLevel as InsertProspect["interestLevel"],
       notes: prospect.notes ?? "",
+      salaryMin: prospect.salaryMin ?? null,
+      salaryMax: prospect.salaryMax ?? null,
     },
   });
 
@@ -159,6 +161,69 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
               </FormItem>
             )}
           />
+        </div>
+
+        <div>
+          <FormLabel className="text-sm font-medium">Salary Range (optional, in $K)</FormLabel>
+          <div className="flex items-center gap-2 mt-1.5">
+            <FormField
+              control={form.control}
+              name="salaryMin"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input
+                        type="number"
+                        min={1}
+                        step={1}
+                        placeholder="80"
+                        className="pl-6 pr-7"
+                        data-testid="input-edit-salary-min"
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          field.onChange(val === "" ? null : parseInt(val, 10));
+                        }}
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">K</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <span className="text-muted-foreground text-sm shrink-0">–</span>
+            <FormField
+              control={form.control}
+              name="salaryMax"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                      <Input
+                        type="number"
+                        min={1}
+                        step={1}
+                        placeholder="120"
+                        className="pl-6 pr-7"
+                        data-testid="input-edit-salary-max"
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          field.onChange(val === "" ? null : parseInt(val, 10));
+                        }}
+                      />
+                      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">K</span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
 
         <FormField
