@@ -39,6 +39,28 @@ export function validateProspect(data: Record<string, unknown>): { valid: boolea
     }
   }
 
+  if (data.salaryMin !== undefined && data.salaryMin !== null) {
+    const min = Number(data.salaryMin);
+    if (!Number.isInteger(min) || min <= 0) {
+      errors.push("Lower salary must be a positive number");
+    }
+  }
+
+  if (data.salaryMax !== undefined && data.salaryMax !== null) {
+    const max = Number(data.salaryMax);
+    if (!Number.isInteger(max) || max <= 0) {
+      errors.push("Upper salary must be a positive number");
+    }
+  }
+
+  if (
+    data.salaryMin != null &&
+    data.salaryMax != null &&
+    Number(data.salaryMax) < Number(data.salaryMin)
+  ) {
+    errors.push("Upper salary must be greater than or equal to lower salary");
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
