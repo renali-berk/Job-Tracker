@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Prospect } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign } from "lucide-react";
+import { ExternalLink, Trash2, Pencil, Flame, ThumbsUp, Minus, DollarSign, GraduationCap } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -74,6 +74,36 @@ function SalaryDisplay({ salaryMin, salaryMax }: { salaryMin: number | null; sal
   );
 }
 
+function HaasAlumBadge({
+  haasAlumCount,
+  haasRecentAlum,
+}: {
+  haasAlumCount: number | null;
+  haasRecentAlum: string | null;
+}) {
+  if (haasAlumCount == null && haasRecentAlum == null) return null;
+
+  const count = haasAlumCount ?? "?";
+  const recent = haasRecentAlum ?? "None";
+
+  return (
+    <div
+      className="flex items-start gap-1.5 rounded-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 px-2 py-1.5"
+      data-testid="haas-alum-badge"
+    >
+      <GraduationCap className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 leading-tight">
+          {count} Haas MBA alum{haasAlumCount !== 1 ? "s" : ""} at this company
+        </p>
+        <p className="text-[10px] text-amber-600/80 dark:text-amber-500/80 leading-tight mt-0.5 truncate">
+          Most recent: <span className="font-medium">{recent}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function ProspectCard({ prospect }: { prospect: Prospect }) {
   const { toast } = useToast();
   const [editOpen, setEditOpen] = useState(false);
@@ -142,6 +172,11 @@ export function ProspectCard({ prospect }: { prospect: Prospect }) {
           </div>
           <SalaryDisplay salaryMin={prospect.salaryMin} salaryMax={prospect.salaryMax} />
         </div>
+
+        <HaasAlumBadge
+          haasAlumCount={prospect.haasAlumCount}
+          haasRecentAlum={prospect.haasRecentAlum}
+        />
 
         {prospect.jobUrl && (
           <a

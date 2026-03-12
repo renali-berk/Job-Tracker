@@ -44,6 +44,8 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
       notes: prospect.notes ?? "",
       salaryMin: prospect.salaryMin ?? null,
       salaryMax: prospect.salaryMax ?? null,
+      haasAlumCount: prospect.haasAlumCount ?? null,
+      haasRecentAlum: prospect.haasRecentAlum ?? "",
     },
   });
 
@@ -224,6 +226,51 @@ export function EditProspectForm({ prospect, onSuccess }: EditProspectFormProps)
               )}
             />
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="haasAlumCount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Haas Alum Count</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    placeholder="e.g. 9"
+                    data-testid="input-edit-haas-count"
+                    value={field.value ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      field.onChange(val === "" ? null : parseInt(val, 10));
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="haasRecentAlum"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Most Recent Alum</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Name or None"
+                    data-testid="input-edit-haas-recent"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <FormField
